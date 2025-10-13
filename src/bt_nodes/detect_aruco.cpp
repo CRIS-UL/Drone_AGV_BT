@@ -48,9 +48,7 @@ BT::NodeStatus DetectAruco::tick()
         break;
       }
     }
-    rclcpp::sleep_for(std::chrono::milliseconds(50));
   }
-
   geometry_msgs::msg::PoseStamped pose;
   {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -61,7 +59,7 @@ BT::NodeStatus DetectAruco::tick()
     pose= *latest_pose_;
   }
   RCLCPP_INFO(node_->get_logger(), "Aruco pose detected: %f, %f, %f",
-             pose.pose.position.x, pose.pose.position.y, pose.pose.position.z);
+            pose.pose.position.x, pose.pose.position.y, pose.pose.position.z);
   setOutput("aruco_pose", pose);
   return BT::NodeStatus::SUCCESS;
 }

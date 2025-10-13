@@ -7,6 +7,9 @@
 #include "bt_aruco_landing/bt_nodes/detect_aruco.hpp"
 #include "bt_aruco_landing/bt_nodes/align_to_aruco.hpp"
 #include "bt_aruco_landing/bt_nodes/land_on_marker.hpp"
+#include "bt_aruco_landing/bt_nodes/go_to_GPS.hpp"
+#include "bt_aruco_landing/bt_nodes/get_DJI_pose.hpp"
+#include "bt_aruco_landing/bt_nodes/get_GPS_goal.hpp"
 
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <mutex>
@@ -37,6 +40,9 @@ int main(int argc, char** argv)
   factory.registerNodeType<bt_aruco_landing::DetectAruco>("DetectAruco");
   factory.registerNodeType<bt_aruco_landing::AlignToAruco>("AlignToAruco");
   factory.registerNodeType<bt_aruco_landing::LandOnMarker>("LandOnMarker");
+  factory.registerNodeType<bt_aruco_landing::GoToGPS>("GoToGPS");
+  factory.registerNodeType<bt_aruco_landing::GetDJIPose>("GetDJIPose");
+  factory.registerNodeType<bt_aruco_landing::GetGPSPose>("GetGPSGoal");
 
   std::string tree_file;
   std::string pkg_share_dir = ament_index_cpp::get_package_share_directory("bt_aruco_landing");
@@ -46,6 +52,7 @@ int main(int argc, char** argv)
   // Create BT tree and access its root blackboard
   auto tree = factory.createTreeFromFile(tree_file);
   auto blackboard = tree.rootBlackboard();
+  blackboard->set<rclcpp::Node::SharedPtr>("node", ros_node);
 
   BT::StdCoutLogger logger(tree);
   BT::PublisherZMQ publisher_zmq(tree);

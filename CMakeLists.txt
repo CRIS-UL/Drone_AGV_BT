@@ -42,6 +42,9 @@ add_library(bt_nodes
   src/bt_nodes/detect_aruco.cpp
   src/bt_nodes/align_to_aruco.cpp
   src/bt_nodes/land_on_marker.cpp
+  src/bt_nodes/go_to_GPS.cpp
+  src/bt_nodes/get_GPS_goal.cpp
+  src/bt_nodes/get_DJI_pose.cpp
 )
 ament_target_dependencies(bt_nodes
   rclcpp

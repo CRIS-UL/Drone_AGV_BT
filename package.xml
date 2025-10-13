@@ -4,7 +4,7 @@
   <name>bt_aruco_landing</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="Tom.Dorian@eiratecg.com">tom</maintainer>
+  <maintainer email="Tom.Dorian@eiratech.com">tom</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
