@@ -6,9 +6,8 @@
         <AlignToAruco aruco_pose="{aruco_pose}" />
         <LandOnMarker aruco_pose="{aruco_pose}"/>
       </Sequence>
-      <Sequence name="GoToGPS">
-        <GetDJIPose dji_pose="{dji_pose}"/>
-        <GetGPSGoal gps_goal="{gps_goal}"/>
+      <Sequence name="GoToPanther">
+        <GetGPSPose gps_goal="{gps_goal}"/>
         <GoToGPS dji_pose="{dji_pose}" gps_goal="{gps_goal}"/>
       </Sequence>
     </Fallback>
