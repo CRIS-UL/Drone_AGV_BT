@@ -53,7 +53,13 @@ BT::NodeStatus DetectAruco::tick()
     RCLCPP_WARN(node_->get_logger(), "No landing_init input, defaulting to false");
     landing_init_ = false;
   }
-  auto result = gimbal_client_->call(request);
+  
+  // Send gimbal request asynchronously
+  if (gimbal_client_->wait_for_service(std::chrono::seconds(1))) {
+    auto future = gimbal_client_->async_send_request(request);
+  } else {
+    RCLCPP_WARN(node_->get_logger(), "Gimbal service not available");
+  }
   while (rclcpp::ok() && (node_->now() - start_time) < timeout) {
     rclcpp::spin_some(node_);
     {
@@ -69,7 +75,7 @@ BT::NodeStatus DetectAruco::tick()
     if (!latest_pose_) {
       RCLCPP_WARN(node_->get_logger(), "Timeout waiting for pose message");
       if(!landing_init_){
-        geometry_msgs::msg:::Twist stop_cmd;
+        geometry_msgs::msg::Twist stop_cmd;
         stop_cmd.linear.x = 0.0;
         stop_cmd.linear.y = 0.0;
         stop_cmd.linear.z = 0.0;

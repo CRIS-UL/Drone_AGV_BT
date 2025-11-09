@@ -72,6 +72,7 @@ BT::NodeStatus GoToGPS::tick()
             if(position_copy.altitude > 10.0) {
                 cmd_vel.linear.z = -0.5; // Descend if above 10m
             }
+        }
         else if (twisting) {
             if (abs(bearing_error) < 0.05) {
                 twisting = false; // Stop twisting when aligned
@@ -105,11 +106,13 @@ BT::NodeStatus GoToGPS::tick()
     }
     return BT::NodeStatus::SUCCESS;
 }
+
 void GoToGPS::positionCallback(const sensor_msgs::msg::NavSatFix::SharedPtr msg)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     current_position_ = msg;
 }
+
 void GoToGPS::attitudeCallback(const geometry_msgs::msg::Vector3::SharedPtr msg)
 {
     std::lock_guard<std::mutex> lock(mutex_);

@@ -20,7 +20,7 @@ public:
         return{ 
             BT::InputPort<rclcpp::Node::SharedPtr>("node"),
             BT::InputPort<sensor_msgs::msg::NavSatFix>("gps_goal"),
-            BT::InputPort<geometry_msgs::msg::PoseStamped>("dji_pose")
+            BT::InputPort<geometry_msgs::msg::PoseStamped>("dji_pose"),
             BT::InputPort<bool>("landing_init")
         };
     }
