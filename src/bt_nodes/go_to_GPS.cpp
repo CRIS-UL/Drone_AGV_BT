@@ -19,7 +19,7 @@ GoToGPS::GoToGPS(const std::string& name, const BT::NodeConfiguration& config)
 BT::NodeStatus GoToGPS::tick()
 {
     auto gps_input = this->getInput<sensor_msgs::msg::NavSatFix>("gps_goal");
-
+    bool landing_init = this->getInput<bool>("landing_init").value_or(false);
     if (!gps_input) {
         RCLCPP_WARN(node_->get_logger(), "Missing GPS goal");
         return BT::NodeStatus::FAILURE;
@@ -59,7 +59,20 @@ BT::NodeStatus GoToGPS::tick()
         geometry_msgs::msg::Twist cmd_vel;
         float distance = sqrt(pow(current_gps_->longitude - position_copy.longitude, 2) +
             pow(current_gps_->latitude - position_copy.latitude, 2)) * 111320.0; // Approx conversion from degrees to meters
-        if (twisting) {
+        
+        if(distance < 10.0) {
+            double dx = (current_gps_->longitude - position_copy.longitude) * 111320.0;
+            double dy = (current_gps_->latitude  - position_copy.latitude)  * 111320.0;
+            float x_error =  cos(drone_yaw) * dx + sin(drone_yaw) * dy;
+            float y_error = -sin(drone_yaw) * dx + cos(drone_yaw) * dy;
+            RCLCPP_INFO(node_->get_logger(), "Close to goal, dx: %.2f m, dy: %.2f m", dx, dy);
+            cmd_vel.linear.x = x_error * k_xy_/10;
+            cmd_vel.linear.y = y_error * k_xy_/10;
+            cmd_vel.angular.z = 0;
+            if(position_copy.altitude > 10.0) {
+                cmd_vel.linear.z = -0.5; // Descend if above 10m
+            }
+        else if (twisting) {
             if (abs(bearing_error) < 0.05) {
                 twisting = false; // Stop twisting when aligned
             }
@@ -79,11 +92,10 @@ BT::NodeStatus GoToGPS::tick()
         }
         cmd_vel.linear.y = 0.0;
         cmd_vel.linear.z = 0.0; // Maintain current altitude
-        
         std::cout << "Bearing: " << bearing << ", Drone Yaw: " << drone_yaw 
                   << ", Bearing Error: " << bearing_error << ", Distance: " << distance << std::endl;        
-        if(distance < 3) { // Within 1 meter of goal
-            RCLCPP_INFO(node_->get_logger(), "Reached GPS goal!");
+        if(distance < 0.5 || landing_init) { // Within 1 meter of goal or landing initiated
+            RCLCPP_INFO(node_->get_logger(), "Reached GPS goal! or Landing initiated.");
             break;
         }
         else{

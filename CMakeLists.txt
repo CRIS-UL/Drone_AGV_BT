@@ -24,6 +24,8 @@ find_package(ament_index_cpp REQUIRED)
 
 find_package(OpenCV REQUIRED)
 
+find_package(dji_msdk_ros REQUIRED)
+
 include_directories(
   /home/tom/aruco-3.1.12/src
 )
@@ -54,6 +56,7 @@ ament_target_dependencies(bt_nodes
   tf2_geometry_msgs
   sensor_msgs
   cv_bridge
+  dji_msdk_ros
 )
 
 # BT Landing main executable
@@ -64,6 +67,9 @@ ament_target_dependencies(bt_landing_node
   behaviortree_cpp_v3
   geometry_msgs
   ament_index_cpp
+  cv_bridge
+  sensor_msgs
+  dji_msdk_ros
 )
 target_link_libraries(bt_nodes
   ${OpenCV_LIBRARIES}
