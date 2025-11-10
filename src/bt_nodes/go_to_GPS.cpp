@@ -55,9 +55,9 @@ BT::NodeStatus GoToGPS::tick()
             current_gps_->latitude - position_copy.latitude);
         float drone_yaw = attitude_copy.z * M_PI / 180.0;
         float bearing_error = bearing - drone_yaw;
+        geometry_msgs::msg::Twist cmd_vel;
         cmd_vel.linear.y = 0.0;
         cmd_vel.linear.z = 0.0; // Maintain current altitude
-        geometry_msgs::msg::Twist cmd_vel;
         float distance = sqrt(pow(current_gps_->longitude - position_copy.longitude, 2) +
             pow(current_gps_->latitude - position_copy.latitude, 2)) * 111320.0; // Approx conversion from degrees to meters
         

@@ -46,10 +46,12 @@ add_library(bt_nodes
   src/bt_nodes/land_on_marker.cpp
   src/bt_nodes/go_to_GPS.cpp
   src/bt_nodes/get_GPS_goal.cpp
+  src/bt_nodes/land_requested_check.cpp
 )
 ament_target_dependencies(bt_nodes
   rclcpp
   geometry_msgs
+  std_msgs
   tf2
   tf2_ros
   behaviortree_cpp_v3

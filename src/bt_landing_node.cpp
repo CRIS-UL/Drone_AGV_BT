@@ -9,7 +9,8 @@
 #include "bt_aruco_landing/bt_nodes/land_on_marker.hpp"
 #include "bt_aruco_landing/bt_nodes/go_to_GPS.hpp"
 #include "bt_aruco_landing/bt_nodes/get_GPS_goal.hpp"
-
+#include "bt_aruco_landing/bt_nodes/land_requested_check.hpp"
+#include <std_msgs/msg/bool.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <mutex>
 #include <optional>
@@ -19,7 +20,7 @@ int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
   auto ros_node = rclcpp::Node::make_shared("bt_landing_node");
-
+  bool land_requested = false;
   // Store latest ArUco pose
   std::optional<geometry_msgs::msg::PoseStamped> latest_pose;
   std::mutex pose_mutex;
@@ -31,6 +32,13 @@ int main(int argc, char** argv)
     {
       std::lock_guard<std::mutex> lock(pose_mutex);
       latest_pose = *msg;
+    });
+  auto land_request_sub = ros_node->create_subscription<std_msgs::msg::Bool>(
+    "/dji_msdk_ros/return2home", 10,
+    [&land_requested](const std_msgs::msg::Bool::SharedPtr msg)
+    {
+      land_requested = msg->data;
+      
     });
 
   BT::BehaviorTreeFactory factory;
@@ -45,6 +53,7 @@ int main(int argc, char** argv)
   factory.registerNodeType<bt_aruco_landing::LandOnMarker>("LandOnMarker");
   factory.registerNodeType<bt_aruco_landing::GoToGPS>("GoToGPS");
   factory.registerNodeType<bt_aruco_landing::GetGPSPose>("GetGPSPose");
+  factory.registerNodeType<bt_aruco_landing::LandRequestedCheck>("LandRequestedCheck");
   
   std::string tree_file;
   std::string pkg_share_dir = ament_index_cpp::get_package_share_directory("bt_aruco_landing");
@@ -71,8 +80,10 @@ int main(int argc, char** argv)
       {
         blackboard->set("aruco_pose", latest_pose.value());
       }
+      if(land_requested){
+        blackboard->set("land_requested", true);
+      }
     }
-
     status = tree.tickRoot();
     rclcpp::spin_some(ros_node);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));

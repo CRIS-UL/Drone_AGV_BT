@@ -43,7 +43,7 @@ BT::NodeStatus LandOnMarker::tick()
 
     // Give the drone some time to respond before succeeding
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-
+    config().blackboard->set("land_requested", false);
     return BT::NodeStatus::SUCCESS;
   } else {
     geometry_msgs::msg::Twist cmd_vel_msg;

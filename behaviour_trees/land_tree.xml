@@ -1,15 +1,18 @@
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
-    <Fallback name="MainFallback">
-      <Sequence name="LandingOnAruco">
-        <DetectAruco aruco_pose="{aruco_pose}" landing_init="{landing_init}"/>
-        <AlignToAruco aruco_pose="{aruco_pose}" />
-        <LandOnMarker aruco_pose="{aruco_pose}"/>
-      </Sequence>
-      <Sequence name="GoToPanther">
-        <GetGPSPose gps_goal="{gps_goal}"/>
-        <GoToGPS dji_pose="{dji_pose}" gps_goal="{gps_goal}" landing_init="{landing_init}"/>
-      </Sequence>
-    </Fallback>
+    <Sequence name="LandingSequence">
+      <LandRequestedCheck/>
+      <Fallback name="MainFallback">
+        <Sequence name="LandingOnAruco">
+          <DetectAruco aruco_pose="{aruco_pose}" landing_init="{landing_init}"/>
+          <AlignToAruco aruco_pose="{aruco_pose}" />
+          <LandOnMarker aruco_pose="{aruco_pose}"/>
+        </Sequence>
+        <Sequence name="GoToPanther">
+          <GetGPSPose gps_goal="{gps_goal}"/>
+          <GoToGPS dji_pose="{dji_pose}" gps_goal="{gps_goal}" landing_init="{landing_init}"/>
+        </Sequence>
+      </Fallback>
+    </Sequence>
   </BehaviorTree>
 </root>
