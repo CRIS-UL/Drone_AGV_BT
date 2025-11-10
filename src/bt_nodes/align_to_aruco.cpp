@@ -78,7 +78,7 @@ BT::NodeStatus AlignToAruco::tick()
     tolerance=0.8;
     yaw_tolerance=1;
   } else if(marker_pose.pose.position.z>3){
-    tolerance=0.2;
+    tolerance=0.05;
     yaw_tolerance=0.5;
   }
   if (std::abs(dx) > tolerance) {
